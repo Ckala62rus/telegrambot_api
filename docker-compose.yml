@@ -1,17 +1,17 @@
 version: '3.3'
 
 services:
-  backend-new-template:
+  telegrambot_api_backend:
     image: ckala62rus/docker_php_sqlsrv-backend-new-template
     build: docker/php
-    container_name: backend-new-template
+    container_name: telegrambot_api_backend
     working_dir: /var/www/
     volumes:
       - ./docker/php/config/php.ini:/usr/local/etc/php/conf.d/40-custom.ini
       - ./backend/:/var/www/
       - ./docker/php/logs/:/var/log/php/
     depends_on:
-      - mysql-new-template
+      - telegrambot_api_db
     environment:
       XDEBUG_MODE: develop,debug
       XDEBUG_CONFIG: client_host=host.docker.internal client_port=9000
@@ -19,39 +19,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  cron-new-template:
-    build: docker/cron
-    container_name: cron-new-template
-    working_dir: /var/www/
-    volumes:
-      - ./docker/php/config/php.ini:/usr/local/etc/php/conf.d/40-custom.ini
-      - ./backend/:/var/www/
-      - ./docker/php/logs/:/var/log/php/
-    depends_on:
-      - backend-new-template
-    environment:
-      XDEBUG_MODE: develop,debug
-      XDEBUG_CONFIG: client_host=host.docker.internal client_port=9000
-      PHP_IDE_CONFIG: serverName=PHPSTORM
-
-  # docker exec -it supervisor /bin/sh
-  supervisor:
-    build:
-      context: .
-      dockerfile: docker/supervisor/supervisor.dockerfile
-    container_name: supervisor
-    volumes:
-      - ./backend:/var/www
-    environment:
-      XDEBUG_MODE: develop,debug
-      XDEBUG_CONFIG: client_host=host.docker.internal client_port=9000
-      PHP_IDE_CONFIG: serverName=PHPSTORM
-    depends_on:
-      - backend-new-template
-      - mysql-new-template
-      - rabbitmq-new-template
-
-  nginx-new-template:
+  telegrambot_api_nginx:
     image: nginx:1.21.1
     container_name: nginx-new-template
     ports:
@@ -65,13 +33,13 @@ services:
       - ./docker/nginx/logs/:/var/log/nginx
       - ./backend/:/var/www
     depends_on:
-      - backend-new-template
+      - telegrambot_api_backend
     environment:
-      NGINX_UPSTREAM: backend-new-template:9000
+      NGINX_UPSTREAM: telegrambot_api_backend:9000
 
-  mysql-new-template:
+  telegrambot_api_db:
     image: mysql:8.0.26
-    container_name: mysql-new-template
+    container_name: telegrambot_api_db
     command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
     volumes:
       - ./docker/mysql/config/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -85,53 +53,11 @@ services:
       - MYSQL_USER=docker-boilerplate
       - MYSQL_PASSWORD=docker-boilerplate
 
-  phpmyadmin-new-template:
+  phpmyadmin_telegrambot_api:
     image: phpmyadmin
-    container_name: phpmyadmin-new-template
+    container_name: phpmyadmin_telegrambot_api
     restart: always
     ports:
       - 8080:80
     environment:
       - PMA_ARBITRARY=1
-
-  #https://hub.docker.com/r/bitnami/rabbitmq
-  rabbitmq-new-template:
-    container_name: rabbitmq-new-template
-    image: 'bitnami/rabbitmq:latest'
-    environment:
-      - RABBITMQ_PASSWORD=123123
-      - RABBITMQ_USERNAME=root
-    ports:
-      - 5672:5672 # for sender and consumer connections
-      - 15672:15672 # for serve RabbitMQ GUI
-
-  redis-new-template:
-    container_name: redis-new-template
-    image: "redis:alpine"
-    command: redis-server --requirepass 123123
-    ports:
-      - "6379:6379"
-
-  redis-commander-new-template:
-    container_name: redis-commander-new-template
-    image: rediscommander/redis-commander:latest
-    restart: always
-    environment:
-      REDIS_HOSTS: redis-new-template
-      REDIS_HOST: redis-new-template
-      REDIS_PORT: redis:6379
-      REDIS_PASSWORD: 123123
-      HTTP_USER: root
-      HTTP_PASSWORD: root
-    ports:
-      - 8081:8081
-
-#    RUN pecl install redis \
-#    # Redis is installed, enable it
-#    && docker-php-ext-enable redis
-
-  # redis:
-  #   image: "redis:alpine"
-  #   command: redis-server --requirepass 123123
-  #   ports:
-  #    - "6379:6379"
