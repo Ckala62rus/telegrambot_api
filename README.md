@@ -1,5 +1,6 @@
 # Первое включение
-
+Запуск скрипта инициализации, для скачивания зависимостей, примнение миграций и сидов
+docker-compose exec telegrambot_api_backend /var/www/start.ssh
 
 #### Debugg PHPStorm
 https://www.youtube.com/watch?v=9MhHQJjMulk
