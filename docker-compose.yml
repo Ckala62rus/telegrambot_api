@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   telegrambot_api_backend:
-    image: ckala62rus/ckala62rus/telegram_bot_api
+    image: ckala62rus/telegram_bot_api
     build:
       context: .
       dockerfile: ./docker/php/Dockerfile

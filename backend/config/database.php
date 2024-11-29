@@ -113,6 +113,19 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'dax' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL_3'),
+            'host' => env('DB_HOST_TELEGRAM_BOT', 'localhost'),
+            'port' => env('DB_PORT_TELEGRAM_BOT', '1433'),
+            'database' => env('DB_DATABASE_TELEGRAM_BOT', 'forge'),
+            'username' => env('DB_USERNAME_TELEGRAM_BOT', 'forge'),
+            'password' => env('DB_PASSWORD_TELEGRAM_BOT', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
+
     ],
 
     /*
