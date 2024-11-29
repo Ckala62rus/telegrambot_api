@@ -26,6 +26,7 @@ use App\Contracts\OrganizationRepositoryInterface;
 use App\Contracts\OrganizationServiceInterface;
 use App\Contracts\RoleRepositoryInterface;
 use App\Contracts\RoleServiceInterface;
+use App\Contracts\TelegramBot\WarehouseServiceInterface;
 use App\Contracts\UserRepositoryInterface;
 use App\Contracts\UserServiceInterface;
 use App\Repositories\BackupDayRepository;
@@ -54,6 +55,7 @@ use App\Services\InternetSpeedService;
 use App\Services\OrganizationsService;
 use App\Services\RoleService;
 use App\Services\UserService;
+use App\Services\WarehouseService;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
 
@@ -104,6 +106,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(BackupPriorityRepositoryInterface::class, BackupPriorityRepository::class);
         $this->app->bind(BackupPriorityServiceInterface::class, BackupPriorityService::class);
+
+        $this->app->bind(WarehouseServiceInterface::class, WarehouseService::class);
     }
 
     /**
