@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\TelegramBot\WarehouseServiceInterface;
 use App\Sql\SqlScripts;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class WarehouseService implements WarehouseServiceInterface
@@ -11,18 +12,36 @@ class WarehouseService implements WarehouseServiceInterface
     /**
      * Get part by number
      * @param string $number
-     * @return void
+     * @return array
      */
-    public function executeCommandFindCellByOnlyNumber(string $number): void
+    public function executeCommandFindCellByOnlyNumber(string $number): array
     {
         TimerExecuteService::Start();
 
         $sql = SqlScripts::getSqlQuery();
+        $data = DB::connection("dax")
+            ->select($sql, [
+                "number" => $this->getCurrentYear($number),
+            ]);
 
-        $data = DB::connection("dax")->select($sql, ["number" => $number]);
+        //партия может быть не найдена!
+        if (!$data) {
+            return [];
+        }
 
-        $time = TimerExecuteService::Stop();
+        $timeExecute = TimerExecuteService::Stop();
+        dd($data);
+        return $data;
+    }
 
-        dd($time);
+    /**
+     * Get code with current year
+     * @param string $code
+     * @return string
+     */
+    public function getCurrentYear(string $code): string
+    {
+        $date = Carbon::now()->format("Y");
+        return $date[2] . $date[3] . '%' . $code;
     }
 }
