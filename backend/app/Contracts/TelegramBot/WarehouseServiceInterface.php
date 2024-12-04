@@ -4,5 +4,6 @@ namespace App\Contracts\TelegramBot;
 
 interface WarehouseServiceInterface
 {
-    public function executeCommandFindCellByOnlyNumber(string $number): void;
+    public function executeCommandFindCellByOnlyNumber(string $number): array;
+    public function getCurrentYear(string $code): string;
 }
