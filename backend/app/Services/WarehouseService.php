@@ -44,4 +44,25 @@ class WarehouseService implements WarehouseServiceInterface
         $date = Carbon::now()->format("Y");
         return $date[2] . $date[3] . '%' . $code;
     }
+
+    /**
+     * Get part with color
+     * @param $code
+     * @return array
+     */
+    public function executeCommandFIndCellByOnlyNumberWithColorCurrentYear($code): array
+    {
+        TimerExecuteService::Start();
+
+        $sql = SqlScripts::getSqlQueryWithColor();
+
+        $data = DB::connection("dax")->select($sql, ["number" => $code]);
+
+        //партия может быть не найдена!
+        if (!$data) {
+            return [];
+        }
+
+        dd($data);
+    }
 }
