@@ -10,19 +10,15 @@ use Illuminate\Support\Facades\DB;
 class WarehouseService implements WarehouseServiceInterface
 {
     /**
-     * Get part by number
+     * Get part by number '/^[0-9]{4,5}$/'
      * @param string $number
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumber(string $number): array
+    public function executeCommandFindCellByOnlyNumberCurrentYear(string $number): array
     {
         TimerExecuteService::Start();
 
-        $sql = SqlScripts::getSqlQuery();
-        $data = DB::connection("dax")
-            ->select($sql, [
-                "number" => $this->getCurrentYear($number),
-            ]);
+        $data = $this->getPartyByNumber($this->getCurrentYear($number));
 
         //партия может быть не найдена!
         if (!$data) {
@@ -35,18 +31,43 @@ class WarehouseService implements WarehouseServiceInterface
     }
 
     /**
+     * Get party by number for another year '/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/'
+     * @param string $number
+     * @return array
+     */
+    public function executeCommandFindCellByOnlyNumberAnotherYear(string $number): array
+    {
+        $data = $this->getPartyByNumber($number);
+        dd($data);
+    }
+
+    /**
+     * Get party by number
+     * @param string $number
+     * @return array
+     */
+    private function getPartyByNumber(string $number): array
+    {
+        return DB::connection("dax")
+            ->select(SqlScripts::getSqlQuery(), [
+                "number" => $number,
+            ]);
+
+    }
+
+    /**
      * Get code with current year
      * @param string $code
      * @return string
      */
     public function getCurrentYear(string $code): string
     {
-        $date = Carbon::now()->format("Y");
-        return $date[2] . $date[3] . '%' . $code;
+        $date = Carbon::now()->format("y");
+        return $date . '%' . $code;
     }
 
     /**
-     * Get part with color
+     * Get part with color '/^([0-9]{4,5})[*]$/'
      * @param $code
      * @return array
      */
