@@ -42,6 +42,69 @@ class WarehouseService implements WarehouseServiceInterface
     }
 
     /**
+     * Get part with color '/^([0-9]{4,5})[*]$/'
+     * @param $code
+     * @return array
+     */
+    public function executeCommandFIndCellByOnlyNumberWithColorCurrentYear($code): array
+    {
+        TimerExecuteService::Start();
+
+//        $sql = SqlScripts::getSqlQueryWithColor();
+//        $data = DB::connection("dax")->select($sql, [
+//            "number" => $this->getCurrentYear($code)
+//        ]);
+
+        $data = $this->getPartyByNumberWithColor($this->getCurrentYear($code));
+
+//        dd($data);
+
+        $timeExecute = TimerExecuteService::Stop();
+
+        //партия может быть не найдена!
+        if (!$data) {
+            return [];
+        }
+
+        dd($data);
+    }
+
+    /**
+     * Get party with color and user '/^([0-9]{1,2}[%]{1}[0-9]{4,5})[*]$/'
+     * @param string $code
+     * @return array
+     */
+    public function executeCommandFIndCellByOnlyNumberWithColorAnotherYear(string $code): array
+    {
+        TimerExecuteService::Start();
+
+//        $sql = SqlScripts::getSqlQueryWithColor();
+//        $data = DB::connection("dax")->select($sql, ["number" => $code]);
+
+        $data = $this->getPartyByNumberWithColor($code);
+
+        $timeExecute = TimerExecuteService::Stop();
+
+        //партия может быть не найдена!
+        if (!$data) {
+            return [];
+        }
+
+        dd($data);
+    }
+
+    /**
+     * Get party by number for another year '/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/'
+     * @param string $number
+     * @return array
+     */
+    public function executeCommandFindCellByOnlyNumberAnotherYear(string $number): array
+    {
+        $data = $this->getPartyByNumber($number);
+        dd($data);
+    }
+
+    /**
      * Get party by number
      * @param string $number
      * @return array
