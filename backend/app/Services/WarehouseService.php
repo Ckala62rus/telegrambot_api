@@ -94,14 +94,43 @@ class WarehouseService implements WarehouseServiceInterface
     }
 
     /**
-     * Get party by number for another year '/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/'
-     * @param string $number
+     * Get party by number with color and user for current year '/^([0-9]{4,10})[@]$/'
+     * @param string $code
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumberAnotherYear(string $number): array
+    public function executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear(string $code): array
     {
-        $data = $this->getPartyByNumber($number);
+        TimerExecuteService::Start();
+
+        $data = $this->getPartByNumberWithColorAndUser($this->getCurrentYear($code));
+
+        $timeExecute = TimerExecuteService::Stop();
+
+        //партия может быть не найдена!
+        if (!$data) {
+            return [];
+        }
+
         dd($data);
+    }
+
+    /**
+     * Get party by number with color and user for current year '/^([0-9]{1,2}[%]{1}[0-9]{4,10})[@]$/'
+     * @param string $code
+     * @return array
+     */
+    public function executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear(string $code): array
+    {
+        TimerExecuteService::Start();
+
+        $data = $this->getPartByNumberWithColorAndUser($code);
+
+        $timeExecute = TimerExecuteService::Stop();
+        dd($data);
+        //партия может быть не найдена!
+        if (!$data) {
+            return [];
+        }
     }
 
     /**
