@@ -152,59 +152,35 @@ class WarehouseService implements WarehouseServiceInterface
      * @param string $code
      * @return string
      */
-    public function getCurrentYear(string $code): string
+    private function getCurrentYear(string $code): string
     {
         $date = Carbon::now()->format("y");
         return $date . '%' . $code;
     }
 
     /**
-     * Get part with color '/^([0-9]{4,5})[*]$/'
-     * @param $code
-     * @return array
-     */
-    public function executeCommandFIndCellByOnlyNumberWithColorCurrentYear($code): array
-    {
-        TimerExecuteService::Start();
-
-        $sql = SqlScripts::getSqlQueryWithColor();
-
-        $data = DB::connection("dax")->select($sql, [
-            "number" => $this->getCurrentYear($code)
-        ]);
-
-        dd($data);
-
-        $timeExecute = TimerExecuteService::Stop();
-
-        //партия может быть не найдена!
-        if (!$data) {
-            return [];
-        }
-
-        dd($data);
-    }
-
-    /**
-     * Get party with color and user '/^([0-9]{1,2}[%]{1}[0-9]{4,10})[@]$/'
+     * Get part by number with color
      * @param string $code
      * @return array
      */
-    public function executeCommandFindCellWithColorAndUserAnotherYear(string $code): array
+    private function getPartyByNumberWithColor(string $code): array
     {
-        TimerExecuteService::Start();
+        return DB::connection("dax")
+            ->select(SqlScripts::getSqlQueryWithColor(), [
+                "number" => $code
+            ]);
+    }
 
-        $sql = SqlScripts::getSqlQueryWithColor();
-
-        $data = DB::connection("dax")->select($sql, ["number" => $code]);
-
-        $timeExecute = TimerExecuteService::Stop();
-
-        //партия может быть не найдена!
-        if (!$data) {
-            return [];
-        }
-
-        dd($data);
+    /**
+     * Get part by number with color and user
+     * @param string $code
+     * @return array
+     */
+    private function getPartByNumberWithColorAndUser(string $code): array
+    {
+        return DB::connection("dax")->select(
+            SqlScripts::getSqlQueryByPartialWithUsers(),
+            ["number" => $code],
+        );
     }
 }

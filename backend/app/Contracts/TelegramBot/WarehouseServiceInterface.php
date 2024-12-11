@@ -45,6 +45,4 @@ interface WarehouseServiceInterface
      * @return array
      */
     public function executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear(string $code): array;
-
-    public function getCurrentYear(string $code): string;
 }
