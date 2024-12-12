@@ -2,7 +2,6 @@
 
 namespace App\Contracts\TelegramBot;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\Request;
 
 interface WarehouseServiceRouterInterface
@@ -16,8 +15,8 @@ interface WarehouseServiceRouterInterface
      *      code_for_looking => '12345' (string)
      *  ]
      *
-     * @param Request $request
-     * @return array
+     * @param array $request
+     * @return bool
      */
-    public function router(Request $request): array;
+    public function router(array $request): bool;
 }
