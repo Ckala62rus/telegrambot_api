@@ -16,17 +16,18 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFindCellByOnlyNumberCurrentYear(string $number): array
     {
-        TimerExecuteService::Start();
+//        TimerExecuteService::Start();
+        dump('executeCommandFindCellByOnlyNumberCurrentYear');
+//        $data = $this->getPartyByNumber($this->getCurrentYear($number));
+        $data = $this->executor(array($this, 'getPartyByNumber'), $this->getCurrentYear($number));
 
-        $data = $this->getPartyByNumber($this->getCurrentYear($number));
-
+        dd($data);
         //партия может быть не найдена!
         if (!$data) {
             return [];
         }
 
-        $timeExecute = TimerExecuteService::Stop();
-        dd($data);
+//        $timeExecute = TimerExecuteService::Stop();
         return $data;
     }
 
@@ -37,7 +38,9 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFindCellByOnlyNumberAnotherYear(string $number): array
     {
-        $data = $this->getPartyByNumber($number);
+        dump('executeCommandFindCellByOnlyNumberAnotherYear');
+//        $data = $this->getPartyByNumber($number);
+        $data = $this->executor(array($this, 'getPartyByNumber'), $number);
         dd($data);
     }
 
@@ -48,18 +51,20 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFIndCellByOnlyNumberWithColorCurrentYear($code): array
     {
-        TimerExecuteService::Start();
+        dump('executeCommandFIndCellByOnlyNumberWithColorCurrentYear');
+//        TimerExecuteService::Start();
 
 //        $sql = SqlScripts::getSqlQueryWithColor();
 //        $data = DB::connection("dax")->select($sql, [
 //            "number" => $this->getCurrentYear($code)
 //        ]);
 
-        $data = $this->getPartyByNumberWithColor($this->getCurrentYear($code));
+//        $data = $this->getPartyByNumberWithColor($this->getCurrentYear($code));
+        $data = $this->executor(array($this, 'getPartyByNumberWithColor'), $this->getCurrentYear($code));
 
-//        dd($data);
+//        $timeExecute = TimerExecuteService::Stop();
 
-        $timeExecute = TimerExecuteService::Stop();
+        dd($data);
 
         //партия может быть не найдена!
         if (!$data) {
@@ -70,20 +75,42 @@ class WarehouseService implements WarehouseServiceInterface
     }
 
     /**
+     * Executor for other commands
+     * @param callable $fnc
+     * @param string $param
+     * @return array
+     */
+    private function executor(callable $fnc, string $param): array
+    {
+        TimerExecuteService::Start();
+
+        $result = $fnc($param);
+
+        $timeExecute = TimerExecuteService::Stop();
+
+        return [
+            'execute_time' => $timeExecute,
+            'data' => $result,
+        ];
+    }
+
+    /**
      * Get party with color and user '/^([0-9]{1,2}[%]{1}[0-9]{4,5})[*]$/'
      * @param string $code
      * @return array
      */
     public function executeCommandFIndCellByOnlyNumberWithColorAnotherYear(string $code): array
     {
-        TimerExecuteService::Start();
+        dump('executeCommandFIndCellByOnlyNumberWithColorAnotherYear');
+//        TimerExecuteService::Start();
 
 //        $sql = SqlScripts::getSqlQueryWithColor();
 //        $data = DB::connection("dax")->select($sql, ["number" => $code]);
 
-        $data = $this->getPartyByNumberWithColor($code);
+//        $data = $this->getPartyByNumberWithColor($code);
+        $data = $this->executor(array($this, 'getPartyByNumberWithColor'), $code);
 
-        $timeExecute = TimerExecuteService::Stop();
+//        $timeExecute = TimerExecuteService::Stop();
 
         //партия может быть не найдена!
         if (!$data) {
