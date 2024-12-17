@@ -68,7 +68,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
@@ -111,15 +111,15 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(WarehouseServiceInterface::class, WarehouseService::class);
         $this->app->bind(WarehouseServiceRouterInterface::class, WarehouseServiceRouter::class);
-
     }
 
     /**
      * Bootstrap any application services.
      *
+     * @param UrlGenerator $url
      * @return void
      */
-    public function boot(UrlGenerator $url)
+    public function boot(UrlGenerator $url): void
     {
 
         // Использовать для публикации в ngrok

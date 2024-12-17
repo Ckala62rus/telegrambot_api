@@ -11,8 +11,7 @@ class BaseController extends Controller
         string $message = "",
         bool $status = true,
         int $statusCode = 200
-    ): JsonResponse
-    {
+    ): JsonResponse {
         return response()->json([
             'status' => $status,
             'message' => $message,
