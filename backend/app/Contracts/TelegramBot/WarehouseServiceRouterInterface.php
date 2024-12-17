@@ -2,8 +2,6 @@
 
 namespace App\Contracts\TelegramBot;
 
-use Illuminate\Http\Request;
-
 interface WarehouseServiceRouterInterface
 {
     /**

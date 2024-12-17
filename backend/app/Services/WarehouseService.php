@@ -6,18 +6,19 @@ use App\Contracts\TelegramBot\WarehouseServiceInterface;
 use App\Sql\SqlScripts;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use JetBrains\PhpStorm\ArrayShape;
 
 class WarehouseService implements WarehouseServiceInterface
 {
     /**
      * Get part by number '/^[0-9]{4,5}$/'
-     * @param string $number
+     * @param string $code
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumberCurrentYear(string $number): array
+    public function executeCommandFindCellByOnlyNumberCurrentYear(string $code): array
     {
         dump('executeCommandFindCellByOnlyNumberCurrentYear');
-        $data = $this->executor(array($this, 'getPartyByNumber'), $this->getCurrentYear($number));
+        $data = $this->executor(array($this, 'getPartyByNumber'), $this->getCurrentYear($code));
 
         dd($data);
         //партия может быть не найдена!
@@ -30,13 +31,13 @@ class WarehouseService implements WarehouseServiceInterface
 
     /**
      * Get party by number for another year '/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/'
-     * @param string $number
+     * @param string $code
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumberAnotherYear(string $number): array
+    public function executeCommandFindCellByOnlyNumberAnotherYear(string $code): array
     {
         dump('executeCommandFindCellByOnlyNumberAnotherYear');
-        $data = $this->executor(array($this, 'getPartyByNumber'), $number);
+        $data = $this->executor(array($this, 'getPartyByNumber'), $code);
         dd($data);
     }
 
@@ -116,16 +117,15 @@ class WarehouseService implements WarehouseServiceInterface
 
     /**
      * Get party by number
-     * @param string $number
+     * @param string $code
      * @return array
      */
-    private function getPartyByNumber(string $number): array
+    private function getPartyByNumber(string $code): array
     {
         return DB::connection("dax")
             ->select(SqlScripts::getSqlQuery(), [
-                "number" => $number,
+                "number" => $code,
             ]);
-
     }
 
     /**
@@ -171,6 +171,7 @@ class WarehouseService implements WarehouseServiceInterface
      * @param string $param
      * @return array
      */
+    #[ArrayShape(['execute_time' => "int", 'data' => "mixed"])]
     private function executor(callable $fnc, string $param): array
     {
         TimerExecuteService::Start();
