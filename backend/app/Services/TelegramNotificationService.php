@@ -34,17 +34,12 @@ class TelegramNotificationService implements TelegramNotificationServiceInterfac
      */
     public function sendMessageToTelegram(string $message, string $id_user): bool|string
     {
-        dump($message . ' => ' . $id_user);
-//        return true;
         $parameters = [
             'text' => $message,
             'chat_id' => $id_user
         ];
 
         $method = 'sendMessage';
-
-        $a = config('telegram');
-        $b = config('telegram.telegram.token');
 
         $url = config('telegram.telegram.url_bot')
             . config('telegram.telegram.token')
