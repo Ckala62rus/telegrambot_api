@@ -13,8 +13,8 @@ interface WarehouseServiceRouterInterface
      *      code_for_looking => '12345' (string)
      *  ]
      *
-     * @param array $request
+     * @param array $data
      * @return bool
      */
-    public function router(array $request): bool;
+    public function router(array $data): bool;
 }
