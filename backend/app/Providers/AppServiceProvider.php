@@ -26,6 +26,7 @@ use App\Contracts\OrganizationRepositoryInterface;
 use App\Contracts\OrganizationServiceInterface;
 use App\Contracts\RoleRepositoryInterface;
 use App\Contracts\RoleServiceInterface;
+use App\Contracts\TelegramBot\TelegramNotificationServiceInterface;
 use App\Contracts\TelegramBot\WarehouseServiceInterface;
 use App\Contracts\TelegramBot\WarehouseServiceRouterInterface;
 use App\Contracts\UserRepositoryInterface;
@@ -55,6 +56,7 @@ use App\Services\InternetServiceProviderService;
 use App\Services\InternetSpeedService;
 use App\Services\OrganizationsService;
 use App\Services\RoleService;
+use App\Services\TelegramNotificationService;
 use App\Services\UserService;
 use App\Services\WarehouseService;
 use App\Services\WarehouseServiceRouter;
@@ -111,6 +113,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(WarehouseServiceInterface::class, WarehouseService::class);
         $this->app->bind(WarehouseServiceRouterInterface::class, WarehouseServiceRouter::class);
+
+        $this->app->bind(TelegramNotificationServiceInterface::class, TelegramNotificationService::class);
     }
 
     /**

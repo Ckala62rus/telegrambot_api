@@ -11,7 +11,10 @@ use Illuminate\Queue\SerializesModels;
 
 class TelegramFindPartJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new job instance.
@@ -21,14 +24,15 @@ class TelegramFindPartJob implements ShouldQueue
     public function __construct(
         private array $request,
         private WarehouseServiceRouterInterface $warehouseServiceRouter,
-    ){}
+    ) {
+    }
 
     /**
      * Execute the job.
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->warehouseServiceRouter->router($this->request);
     }
