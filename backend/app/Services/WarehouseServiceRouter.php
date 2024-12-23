@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Contracts\TelegramBot\WarehouseServiceInterface;
 use App\Contracts\TelegramBot\WarehouseServiceRouterInterface;
+use App\DTO\TelegramBotRequestDTO;
+use InvalidArgumentException;
 
 class WarehouseServiceRouter implements WarehouseServiceRouterInterface
 {
@@ -12,50 +14,91 @@ class WarehouseServiceRouter implements WarehouseServiceRouterInterface
      */
     public function __construct(
         private WarehouseServiceInterface $warehouseService,
-    ){}
+    ) {
+    }
 
     /**
-     * create queue for execute command
-     * @param array $request
-     * @return bool
+     * Create queue for execute command
+     * @param array $data
+     * @return array
      */
-    public function router(array $request): bool
+    public function router(array $data): array
     {
-        $data = $request;
+        $data = new TelegramBotRequestDTO($data);
 
-        if ( preg_match('/^[0-9]{4,5}$/', $data["code_for_looking"]) ) {
-            dump($data["code_for_looking"]);
-            $res = $this
+        if (preg_match('/^[0-9]{4,5}$/', $data->getDirtyCode())) {
+            $data->setCode($data->getDirtyCode());
+            dump($data->getDirtyCode());
+            return $this
                 ->warehouseService
-                ->executeCommandFindCellByOnlyNumberCurrentYear($data['code_for_looking']);
+                ->executeCommandFindCellByOnlyNumberCurrentYear($data);
 
             // todo send telegram response to user.
 
             return true;
         }
 
-        if ( preg_match('/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/', $data["code_for_looking"]) ) {
-            dump($data["code_for_looking"]);
+        if (preg_match('/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/', $data->getDirtyCode())) {
+            dump($data->getDirtyCode());
+            $data->setCode($data->getDirtyCode());
             $res = $this
                 ->warehouseService
-                ->executeCommandFindCellByOnlyNumberAnotherYear($data['code_for_looking']);
+                ->executeCommandFindCellByOnlyNumberAnotherYear($data);
 
             // todo send telegram response to user.
 
             return true;
         }
 
-        if ( preg_match('/^([0-9]{4,5})[*]$/', $data["code_for_looking"], $match) ) {
-            dump($match);
+        if (preg_match('/^([0-9]{4,5})[*]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
             $res = $this
                 ->warehouseService
-                ->executeCommandFIndCellByOnlyNumberWithColorCurrentYear($match[1]);
+                ->executeCommandFIndCellByOnlyNumberWithColorCurrentYear($data);
 
             // todo send telegram response to user.
 
             return true;
         }
 
-        throw new \InvalidArgumentException("Unknown command {$data["code_for_looking"]}");
+        if (preg_match('/^([0-9]{1,2}[%]{1}[0-9]{4,5})[*]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
+            $res = $this
+                ->warehouseService
+                ->executeCommandFIndCellByOnlyNumberWithColorAnotherYear($data);
+
+            // todo send telegram response to user.
+
+            return true;
+        }
+
+        if (preg_match('/^([0-9]{4,10})[@]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
+            $res = $this
+                ->warehouseService
+                ->executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear($data);
+
+            // todo send telegram response to user.
+
+            return true;
+        }
+
+        if (preg_match('/^([0-9]{1,2}[%]{1}[0-9]{4,10})[@]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
+            $res = $this
+                ->warehouseService
+                ->executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear($data);
+
+            // todo send telegram response to user.
+
+            return true;
+        }
+
+        dd('error');
+        throw new InvalidArgumentException("Unknown command {$data->getDirtyCode()}");
     }
 }

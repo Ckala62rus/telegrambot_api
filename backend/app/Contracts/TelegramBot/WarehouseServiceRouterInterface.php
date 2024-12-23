@@ -14,7 +14,7 @@ interface WarehouseServiceRouterInterface
      *  ]
      *
      * @param array $data
-     * @return bool
+     * @return array
      */
-    public function router(array $data): bool;
+    public function router(array $data): array;
 }
