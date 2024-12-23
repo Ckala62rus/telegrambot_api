@@ -33,39 +33,72 @@ class WarehouseServiceRouter implements WarehouseServiceRouterInterface
                 ->warehouseService
                 ->executeCommandFindCellByOnlyNumberCurrentYear($data);
 
-        if ( preg_match('/^[0-9]{4,5}$/', $data["code_for_looking"]) ) {
-            dump($data["code_for_looking"]);
+            // todo send telegram response to user.
+
+            return true;
+        }
+
+        if (preg_match('/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/', $data->getDirtyCode())) {
+            dump($data->getDirtyCode());
+            $data->setCode($data->getDirtyCode());
             $res = $this
                 ->warehouseService
-                ->executeCommandFindCellByOnlyNumberCurrentYear($data['code_for_looking']);
+                ->executeCommandFindCellByOnlyNumberAnotherYear($data);
 
             // todo send telegram response to user.
 
             return true;
         }
 
-        if ( preg_match('/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/', $data["code_for_looking"]) ) {
-            dump($data["code_for_looking"]);
+        if (preg_match('/^([0-9]{4,5})[*]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
             $res = $this
                 ->warehouseService
-                ->executeCommandFindCellByOnlyNumberAnotherYear($data['code_for_looking']);
+                ->executeCommandFIndCellByOnlyNumberWithColorCurrentYear($data);
 
             // todo send telegram response to user.
 
             return true;
         }
 
-        if ( preg_match('/^([0-9]{4,5})[*]$/', $data["code_for_looking"], $match) ) {
-            dump($match);
+        if (preg_match('/^([0-9]{1,2}[%]{1}[0-9]{4,5})[*]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
             $res = $this
                 ->warehouseService
-                ->executeCommandFIndCellByOnlyNumberWithColorCurrentYear($match[1]);
+                ->executeCommandFIndCellByOnlyNumberWithColorAnotherYear($data);
 
             // todo send telegram response to user.
 
             return true;
         }
 
-        throw new \InvalidArgumentException("Unknown command {$data["code_for_looking"]}");
+        if (preg_match('/^([0-9]{4,10})[@]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
+            $res = $this
+                ->warehouseService
+                ->executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear($data);
+
+            // todo send telegram response to user.
+
+            return true;
+        }
+
+        if (preg_match('/^([0-9]{1,2}[%]{1}[0-9]{4,10})[@]$/', $data->getDirtyCode(), $match)) {
+            dump($data->getDirtyCode());
+            $data->setCode($match[1]);
+            $res = $this
+                ->warehouseService
+                ->executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear($data);
+
+            // todo send telegram response to user.
+
+            return true;
+        }
+
+        dd('error');
+        throw new InvalidArgumentException("Unknown command {$data->getDirtyCode()}");
     }
 }
