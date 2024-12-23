@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Contracts\TelegramBot\WarehouseServiceInterface;
 use App\Contracts\TelegramBot\WarehouseServiceRouterInterface;
+use App\DTO\TelegramBotRequestDTO;
+use InvalidArgumentException;
 
 class WarehouseServiceRouter implements WarehouseServiceRouterInterface
 {
@@ -12,16 +14,24 @@ class WarehouseServiceRouter implements WarehouseServiceRouterInterface
      */
     public function __construct(
         private WarehouseServiceInterface $warehouseService,
-    ){}
+    ) {
+    }
 
     /**
-     * create queue for execute command
-     * @param array $request
-     * @return bool
+     * Create queue for execute command
+     * @param array $data
+     * @return array
      */
-    public function router(array $request): bool
+    public function router(array $data): array
     {
-        $data = $request;
+        $data = new TelegramBotRequestDTO($data);
+
+        if (preg_match('/^[0-9]{4,5}$/', $data->getDirtyCode())) {
+            $data->setCode($data->getDirtyCode());
+            dump($data->getDirtyCode());
+            return $this
+                ->warehouseService
+                ->executeCommandFindCellByOnlyNumberCurrentYear($data);
 
         if ( preg_match('/^[0-9]{4,5}$/', $data["code_for_looking"]) ) {
             dump($data["code_for_looking"]);
