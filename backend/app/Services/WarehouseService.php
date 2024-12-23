@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Contracts\TelegramBot\TelegramNotificationServiceInterface;
 use App\Contracts\TelegramBot\WarehouseServiceInterface;
+use App\DTO\TelegramBotOutResponse;
+use App\DTO\TelegramBotRequestDTO;
 use App\Sql\SqlScripts;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -11,108 +14,139 @@ use JetBrains\PhpStorm\ArrayShape;
 class WarehouseService implements WarehouseServiceInterface
 {
     /**
+     * @var string
+     */
+    private string $NOT_FOUND_PART_MASSAGE = 'партия не найдена';
+
+    /**
+     * @param TelegramNotificationServiceInterface $telegramNotificationService
+     */
+    public function __construct(
+        private TelegramNotificationServiceInterface $telegramNotificationService
+    ) {
+    }
+
+    /**
      * Get part by number '/^[0-9]{4,5}$/'
-     * @param string $code
+     * @param TelegramBotRequestDTO $data
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumberCurrentYear(string $code): array
+    public function executeCommandFindCellByOnlyNumberCurrentYear(TelegramBotRequestDTO $data): array
     {
         dump('executeCommandFindCellByOnlyNumberCurrentYear');
-        $data = $this->executor(array($this, 'getPartyByNumber'), $this->getCurrentYear($code));
+        $result = $this
+            ->executor(
+                [$this, 'getPartyByNumber'],
+                $this->getCurrentYear($data->getCode())
+            );
 
-        dd($data);
-        //партия может быть не найдена!
-        if (!$data) {
-            return [];
-        }
+//        dump($result);
 
-        return $data;
+        return $this->processingResult(
+            dataFromDatabase: $result,
+            dtoInput: $data,
+        );
     }
 
     /**
      * Get party by number for another year '/^[0-9]{1,2}[%]{1}[0-9]{4,5}$/'
-     * @param string $code
+     * @param TelegramBotRequestDTO $data
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumberAnotherYear(string $code): array
+    public function executeCommandFindCellByOnlyNumberAnotherYear(TelegramBotRequestDTO $data): array
     {
         dump('executeCommandFindCellByOnlyNumberAnotherYear');
-        $data = $this->executor(array($this, 'getPartyByNumber'), $code);
-        dd($data);
+        $result = $this->executor(array($this, 'getPartyByNumber'), $data->getCode());
+
+        dump($result);
+
+        return $this->processingResult(
+            dataFromDatabase: $result,
+            dtoInput: $data,
+        );
     }
 
     /**
      * Get part with color '/^([0-9]{4,5})[*]$/'
-     * @param $code
+     * @param TelegramBotRequestDTO $data
      * @return array
      */
-    public function executeCommandFIndCellByOnlyNumberWithColorCurrentYear($code): array
+    public function executeCommandFIndCellByOnlyNumberWithColorCurrentYear(TelegramBotRequestDTO $data): array
     {
         dump('executeCommandFIndCellByOnlyNumberWithColorCurrentYear');
-        $data = $this->executor(array($this, 'getPartyByNumberWithColor'), $this->getCurrentYear($code));
-        dd($data);
+        $result = $this->executor(array($this, 'getPartyByNumberWithColor'), $this->getCurrentYear($data->getCode()));
+        dump($result);
 
-        //партия может быть не найдена!
-        if (!$data) {
-            return [];
-        }
-
-        dd($data);
+        return $this->processingResult(
+            dataFromDatabase: $result,
+            dtoInput: $data,
+            additionalFields: ['CONFIGID', 'COLORID']
+        );
     }
 
     /**
      * Get party with color and user '/^([0-9]{1,2}[%]{1}[0-9]{4,5})[*]$/'
-     * @param string $code
+     * @param TelegramBotRequestDTO $data
      * @return array
      */
-    public function executeCommandFIndCellByOnlyNumberWithColorAnotherYear(string $code): array
+    public function executeCommandFIndCellByOnlyNumberWithColorAnotherYear(TelegramBotRequestDTO $data): array
     {
         dump('executeCommandFIndCellByOnlyNumberWithColorAnotherYear');
-        $data = $this->executor(array($this, 'getPartyByNumberWithColor'), $code);
+        $result = $this->executor(array($this, 'getPartyByNumberWithColor'), $data->getCode());
 
-        //партия может быть не найдена!
-        if (!$data) {
-            return [];
-        }
+        dump($result);
 
-        dd($data);
+        return $this->processingResult(
+            dataFromDatabase: $result,
+            dtoInput: $data,
+            additionalFields: ['CONFIGID', 'COLORID']
+        );
     }
 
     /**
      * Get party by number with color and user for current year '/^([0-9]{4,10})[@]$/'
-     * @param string $code
+     * @param TelegramBotRequestDTO $data
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear(string $code): array
+    public function executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear(TelegramBotRequestDTO $data): array
     {
         dump('executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear');
-        $data = $this->executor(array($this, 'getPartByNumberWithColorAndUser'), $this->getCurrentYear($code));
+        $result = $this
+            ->executor(
+                [$this, 'getPartByNumberWithColorAndUser'],
+                $this->getCurrentYear($data->getCode())
+            );
+        dump($result);
 
-        dd($data);
-
-        //партия может быть не найдена!
-        if (!$data) {
-            return [];
-        }
-
-        return $data;
+        return $this->processingResult(
+            dataFromDatabase: $result,
+            dtoInput: $data,
+            additionalFields: ['COLORID', 'USERNAME']
+        );
     }
 
     /**
      * Get party by number with color and user for current year '/^([0-9]{1,2}[%]{1}[0-9]{4,10})[@]$/'
-     * @param string $code
+     * @param TelegramBotRequestDTO $data
      * @return array
      */
-    public function executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear(string $code): array
+    public function executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear(TelegramBotRequestDTO $data): array
     {
-        $data = $this->executor(array($this, 'getPartByNumberWithColorAndUser'), $code);
+        dump('executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear');
+        $result = $this
+            ->executor(
+                [$this, 'getPartByNumberWithColorAndUser'],
+                $data->getCode()
+            );
 
-        dd($data);
+        dump($result);
 
-        //партия может быть не найдена!
-        if (!$data) {
-            return [];
-        }
+        return $this
+            ->processingResult(
+                dataFromDatabase: $result,
+                dtoInput: $data,
+                additionalFields: ['COLORID', 'USERNAME']
+            );
     }
 
     /**
@@ -135,8 +169,7 @@ class WarehouseService implements WarehouseServiceInterface
      */
     private function getCurrentYear(string $code): string
     {
-        $date = Carbon::now()->format("y");
-        return $date . '%' . $code;
+        return Carbon::now()->format("y") . '%' . $code;
     }
 
     /**
@@ -184,5 +217,44 @@ class WarehouseService implements WarehouseServiceInterface
             'execute_time' => $timeExecute,
             'data' => $result,
         ];
+    }
+
+    /**
+     * processing result and send notification
+     * @param array $dataFromDatabase
+     * @param TelegramBotRequestDTO $dtoInput
+     * @param array $additionalFields
+     * @return array
+     */
+    public function processingResult(
+        array $dataFromDatabase,
+        TelegramBotRequestDTO $dtoInput,
+        array $additionalFields = []
+    ): array {
+        if (!$dataFromDatabase) {
+            $this
+                ->telegramNotificationService
+                ->sendMessageToTelegram(
+                    message: $this->NOT_FOUND_PART_MASSAGE . ' ' . $dtoInput->getCode(),
+                    id_user: $dtoInput->getTelegramUserId()
+                );
+            return [];
+        }
+
+        $dtoOutput = new TelegramBotOutResponse(
+            data: $dataFromDatabase,
+            someField: $additionalFields
+        );
+
+        $message = $dtoOutput->getCellByOnlyNumberCurrentYear();
+
+        $this
+            ->telegramNotificationService
+            ->sendMessageToTelegram(
+                message: $message,
+                id_user: $dtoInput->getTelegramUserId()
+            );
+
+        return $dataFromDatabase;
     }
 }
