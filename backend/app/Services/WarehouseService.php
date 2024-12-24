@@ -231,7 +231,7 @@ class WarehouseService implements WarehouseServiceInterface
         TelegramBotRequestDTO $dtoInput,
         array $additionalFields = []
     ): array {
-        if (!$dataFromDatabase) {
+        if (!$dataFromDatabase['data']) {
             $this
                 ->telegramNotificationService
                 ->sendMessageToTelegram(

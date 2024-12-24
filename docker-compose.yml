@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   telegrambot_api_backend:
     image: ckala62rus/telegram_bot_api
@@ -20,10 +18,13 @@ services:
       PHP_IDE_CONFIG: serverName=PHPSTORM
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - my-network
+      - default
 
   telegrambot_api_nginx:
     image: nginx:1.21.1
-    container_name: nginx-new-template
+    container_name: telegrambot_api_nginx
     ports:
       - 90:80
     volumes:
@@ -38,11 +39,14 @@ services:
       - telegrambot_api_backend
     environment:
       NGINX_UPSTREAM: telegrambot_api_backend:9000
+    networks:
+      - my-network
+      - default
 
   telegrambot_api_db:
     image: mysql:8.0.26
     container_name: telegrambot_api_db
-    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
+    command: [ '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password' ]
     volumes:
       - ./docker/mysql/config/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./docker/mysql/mysql/:/var/lib/mysql:rw
@@ -54,6 +58,9 @@ services:
       - MYSQL_DATABASE=docker-boilerplate
       - MYSQL_USER=docker-boilerplate
       - MYSQL_PASSWORD=docker-boilerplate
+    networks:
+      - my-network
+      - default
 
   phpmyadmin_telegrambot_api:
     image: phpmyadmin
@@ -63,3 +70,8 @@ services:
       - 8080:80
     environment:
       - PMA_ARBITRARY=1
+
+networks:
+  my-network:
+    name: giveItANamePlease
+    driver: bridge
