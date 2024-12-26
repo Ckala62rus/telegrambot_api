@@ -33,14 +33,11 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFindCellByOnlyNumberCurrentYear(TelegramBotRequestDTO $data): array
     {
-        dump('executeCommandFindCellByOnlyNumberCurrentYear');
         $result = $this
             ->executor(
                 [$this, 'getPartyByNumber'],
                 $this->getCurrentYear($data->getCode())
             );
-
-//        dump($result);
 
         return $this->processingResult(
             dataFromDatabase: $result,
@@ -55,10 +52,7 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFindCellByOnlyNumberAnotherYear(TelegramBotRequestDTO $data): array
     {
-        dump('executeCommandFindCellByOnlyNumberAnotherYear');
         $result = $this->executor(array($this, 'getPartyByNumber'), $data->getCode());
-
-        dump($result);
 
         return $this->processingResult(
             dataFromDatabase: $result,
@@ -73,9 +67,7 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFIndCellByOnlyNumberWithColorCurrentYear(TelegramBotRequestDTO $data): array
     {
-        dump('executeCommandFIndCellByOnlyNumberWithColorCurrentYear');
         $result = $this->executor(array($this, 'getPartyByNumberWithColor'), $this->getCurrentYear($data->getCode()));
-        dump($result);
 
         return $this->processingResult(
             dataFromDatabase: $result,
@@ -91,10 +83,7 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFIndCellByOnlyNumberWithColorAnotherYear(TelegramBotRequestDTO $data): array
     {
-        dump('executeCommandFIndCellByOnlyNumberWithColorAnotherYear');
         $result = $this->executor(array($this, 'getPartyByNumberWithColor'), $data->getCode());
-
-        dump($result);
 
         return $this->processingResult(
             dataFromDatabase: $result,
@@ -110,13 +99,11 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear(TelegramBotRequestDTO $data): array
     {
-        dump('executeCommandFindCellByOnlyNumberWithColorAndUserCurrentYear');
         $result = $this
             ->executor(
                 [$this, 'getPartByNumberWithColorAndUser'],
                 $this->getCurrentYear($data->getCode())
             );
-        dump($result);
 
         return $this->processingResult(
             dataFromDatabase: $result,
@@ -132,14 +119,11 @@ class WarehouseService implements WarehouseServiceInterface
      */
     public function executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear(TelegramBotRequestDTO $data): array
     {
-        dump('executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear');
         $result = $this
             ->executor(
                 [$this, 'getPartByNumberWithColorAndUser'],
                 $data->getCode()
             );
-
-        dump($result);
 
         return $this
             ->processingResult(
