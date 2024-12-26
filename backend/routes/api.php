@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthTokenController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\TelegramController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,3 +29,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 //Route::any('bot', [UserController::class, 'test_webhook']);
+
+Route::get('find-party', [TelegramController::class, 'findPartyByNumber'])->name("telegram_api");
