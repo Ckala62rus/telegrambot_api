@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Contracts\TelegramBot\WarehouseServiceInterface;
 use App\Contracts\TelegramBot\WarehouseServiceRouterInterface;
 use App\DTO\TelegramBotRequestDTO;
-use InvalidArgumentException;
 
 class WarehouseServiceRouter implements WarehouseServiceRouterInterface
 {
@@ -68,6 +67,7 @@ class WarehouseServiceRouter implements WarehouseServiceRouterInterface
                 ->executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear($data);
         }
 
-        throw new InvalidArgumentException("Unknown command {$data->getDirtyCode()}");
+        $this->warehouseService->unknownCommand($data);
+//        throw new InvalidArgumentException("Unknown command {$data->getDirtyCode()}");
     }
 }
