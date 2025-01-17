@@ -43,14 +43,6 @@ class TelegramBotOutResponse
     {
         $rows = $data['data'];
 
-//        $msg .= $item->BATCH . PHP_EOL;
-//        $msg .= $item->NAMEALIAS . PHP_EOL;
-//        $msg .= "Конфиг: " . $item->CONFIGID . PHP_EOL;
-//        $msg .= "Цвет: " . $item->COLORID . PHP_EOL;
-//        $msg .= "Яч: " . $item->WMSLOCATION . PHP_EOL;
-//        $msg .= "НЗ: " . $item->LICENSE . PHP_EOL;
-//        $msg .= PHP_EOL;
-
         $this->fields = array_merge($this->fields, $someField);
 
         foreach ($rows as $key => $item) {

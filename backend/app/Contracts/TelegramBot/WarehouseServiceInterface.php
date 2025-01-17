@@ -47,4 +47,11 @@ interface WarehouseServiceInterface
      * @return array
      */
     public function executeCommandFindCellByOnlyNumberWithColorAndUserAnotherYear(TelegramBotRequestDTO $data): array;
+
+    /**
+     * Send message to user about unknown command
+     * @param TelegramBotRequestDTO $dtoInput
+     * @return array
+     */
+    public function unknownCommand(TelegramBotRequestDTO $dtoInput): array;
 }
