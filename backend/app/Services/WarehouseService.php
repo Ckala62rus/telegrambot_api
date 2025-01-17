@@ -241,4 +241,21 @@ class WarehouseService implements WarehouseServiceInterface
 
         return $dataFromDatabase;
     }
+
+    /**
+     * Send message to user about unknown command
+     * @param TelegramBotRequestDTO $dtoInput
+     * @return array
+     */
+    public function unknownCommand(TelegramBotRequestDTO $dtoInput): array
+    {
+        $this
+            ->telegramNotificationService
+            ->sendMessageToTelegram(
+                message: "Некорректные данные",
+                id_user: $dtoInput->getTelegramUserId()
+            );
+
+        return [];
+    }
 }
