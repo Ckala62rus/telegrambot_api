@@ -43,6 +43,22 @@ services:
       - my-network
       - default
 
+  # docker exec -it supervisor /bin/sh
+  supervisor:
+    build:
+      context: .
+      dockerfile: docker/supervisor/supervisor.dockerfile
+    container_name: supervisor
+    volumes:
+      - ./backend:/var/www
+    environment:
+      XDEBUG_MODE: develop,debug
+      XDEBUG_CONFIG: client_host=host.docker.internal client_port=9000
+      PHP_IDE_CONFIG: serverName=PHPSTORM
+    depends_on:
+      - telegrambot_api_backend
+      - telegrambot_api_db
+
   telegrambot_api_db:
     image: mysql:8.0.26
     container_name: telegrambot_api_db
